@@ -1,7 +1,9 @@
 import './ExpensesForm.css';
 import {useState} from "react";
 
-export default function ExpensesForm() {
+export default function ExpensesForm(props) {
+    const[isEditing, setIsEditing] = useState(false);
+
     const [inputTitle, setInputTitle] = useState('');
     const [inputAmount, setInputAmount] = useState('');
     const [inputDate, setInputDate] = useState('');
@@ -21,20 +23,30 @@ export default function ExpensesForm() {
 
     function submitHandler(event) {
         event.preventDefault();
-        const expenseDate = {
+        const expenseData = {
             title: inputTitle,
-            amount: inputAmount,
+            amount: +inputAmount,
             date: new Date(inputDate)
         }
-        console.log(expenseDate);
+        props.onSaveExpenseData(expenseData);
         setInputTitle('');
         setInputAmount('');
         setInputDate('');
     }
 
+    function editingChangeHandler() {
+        setIsEditing(true);
+    }
+
+    function cancelHandler() {
+        setIsEditing(false);
+    }
+
     return(
         <div className='new-expense'>
-            <form onSubmit={submitHandler}>
+            {!isEditing && <button onClick={editingChangeHandler}>Add New Expense</button>}
+
+            {isEditing && <form onSubmit={submitHandler}>
                 <div className='new-expense__controls'>
                     <div className='new-expense__control'>
                         <label>Title</label>
@@ -50,9 +62,10 @@ export default function ExpensesForm() {
                     </div>
                 </div>
                 <div className='new-expense__actions'>
+                    <button type='button' onClick={cancelHandler}>Cancel</button>
                     <button type='submit'>Add Expense</button>
                 </div>
-            </form>
+            </form>}
         </div>
     );
 }
